@@ -1,0 +1,3 @@
+ 
+ - Make it possible to have a lua test without a corresponding java test
+ - Annotation to specify platform?

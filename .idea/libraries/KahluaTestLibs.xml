@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="KahluaTestLibs">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/libs" />
+      <root url="file://$PROJECT_DIR$/src/net/simensan/KahluaTest/resources" />
+      <root url="file://$PROJECT_DIR$/src/net/simensan/KahluaTestExample/resources" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+    <jarDirectory url="file://$PROJECT_DIR$/libs" recursive="false" />
+  </library>
+</component>
