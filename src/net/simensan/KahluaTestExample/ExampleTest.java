@@ -5,10 +5,10 @@ import net.simensan.KahluaTest.annotations.LuaTest;
 import org.junit.Before;
 import org.junit.Test;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static se.mockachino.Mockachino.*;
 
-@LuaTest(source="test.lua")
+//@LuaTest(source = "blah) - Can be override from default that bases on class name
 public class ExampleTest extends AbstractKahluaTest {
     private SquareBindings squareBindings;
 
@@ -21,6 +21,12 @@ public class ExampleTest extends AbstractKahluaTest {
 
     @Test
     public void testCreateSquare() {
+        callLuaTest();
+        verifyOnce().on(squareBindings).createSquare(10);
+   }
+
+    @Test
+    public void testCreateSquare2() {
         assertEquals(1,1);
         callLuaTest();
         verifyOnce().on(squareBindings).createSquare(10);

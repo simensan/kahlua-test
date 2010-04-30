@@ -8,7 +8,6 @@ import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
-import se.krka.kahlua.vm.KahluaTable;
 import se.krka.kahlua.vm.KahluaTableIterator;
 import se.krka.kahlua.stdlib.BaseLib;
 
@@ -22,29 +21,46 @@ public class KahluaRunner extends BlockJUnit4ClassRunner {
     private Map<String, Object> luaTestFunctions = Maps.newHashMap();
     private FrameworkMethod currentMethod;
 
-    public KahluaRunner(Class<?> clazz) throws InitializationError {
-        super(clazz);
+    private final String luaSourceFile;
+    private static final String LUA_BEFORE_FUNCTION = "before";
+    private static final String LUA_AFTER_FUNCTION = "after";
 
+    public KahluaRunner(Class<?> clazz) throws InitializationError, NoLuaTestsAvailableException {
+        super(clazz);
+        
         LuaTest annotation = clazz.getAnnotation(LuaTest.class);
+        String luaSourceFile = annotation.source();
+
+        if(luaSourceFile.isEmpty()) {
+            luaSourceFile = clazz.getName();
+            luaSourceFile = luaSourceFile.substring(luaSourceFile.lastIndexOf(".")+1) + ".lua";
+        }
+
+        this.luaSourceFile = luaSourceFile;
+
+        setupLuaVm();
+    }
+
+    private void setupLuaVm() throws NoLuaTestsAvailableException {
         kahluaVm = new KahluaVm();
         JunitApiExposer junitApiExposer = new JunitApiExposer();
         kahluaVm.getLuaJavaClassExposer().exposeGlobalFunctions(junitApiExposer);
 
-        try {
-            kahluaVm.loadLuaFromFile("testhelper.lua");
-            kahluaVm.loadLuaFromFile(annotation.source());
-            KahluaTable env = kahluaVm.getEnvironment();
-
-            KahluaTableIterator it = env.iterator();
+        try { //All this needs to be redone each test as each LuaVm holds its own unique reference to the methods
+            kahluaVm.loadLuaFromFile(luaSourceFile);
+            KahluaTableIterator it = kahluaVm.getEnvironment().iterator();
 
             boolean hasTest = false;
 
             while(it.advance()) {
                 Object value = it.getValue();
-                String name = (String)it.getKey();
+                String name = it.getKey().toString();
                 String valueType = BaseLib.type(value);
 
-                boolean foundMatch = name.startsWith("test") && valueType.equals("function");
+                boolean foundMatch = (name.startsWith("test")
+                                        || name.equals("before")
+                                        || name.equals("after"))
+                                    && valueType.equals("function");
                 if(foundMatch) {
                     hasTest = true;
                     luaTestFunctions.put(name, value);
@@ -52,9 +68,9 @@ public class KahluaRunner extends BlockJUnit4ClassRunner {
             }
 
             if(!hasTest) {
-                //no test error
+                throw new NoLuaTestsAvailableException();
             }
-            
+
         } catch(RuntimeException e) {
             e.printStackTrace();
         }
@@ -62,18 +78,16 @@ public class KahluaRunner extends BlockJUnit4ClassRunner {
 
     @Override
     protected void runChild(FrameworkMethod method, RunNotifier notifier) {
-        System.out.println("Run child");
         currentMethod = method;
         
         if(luaTestFunctions.get(method.getName()) == null) {
             Description description= describeChild(method);
 		    EachTestNotifier eachTestNotifier = new EachTestNotifier(notifier, description);
-            System.out.println("\nMissing function implementation: " + method.getName() + "\n");
+            System.out.println("Missing function implementation: " + method.getName() + "\n");
             eachTestNotifier.addFailure(new NonExistantLuaTestException());
 
             return;
         }
-
         super.runChild(method, notifier);
     }
 
@@ -82,26 +96,36 @@ public class KahluaRunner extends BlockJUnit4ClassRunner {
     }
 
     public void callLuaTest() {
+        Object beforeMethod = luaTestFunctions.get(LUA_BEFORE_FUNCTION);
+        if(beforeMethod != null) {
+            kahluaVm.luaCall(beforeMethod);    
+        }
+        
         Object luaMethod = luaTestFunctions.get(currentMethod.getName());
         kahluaVm.luaCall(luaMethod);
+
+        Object afterMethod = luaTestFunctions.get(LUA_AFTER_FUNCTION); 
+        if(afterMethod != null) {
+            kahluaVm.luaCall(afterMethod);
+        }
     }
 
     @Override
     protected List<FrameworkMethod> computeTestMethods() {
-        List<FrameworkMethod> baseMethods = super.computeTestMethods();
-
         if(testMethods == null) {
-            testMethods = baseMethods;
+            testMethods = super.computeTestMethods();
         }
 
-		return baseMethods;
+		return testMethods;
     }
 
     @Override
     protected Object createTest() throws Exception {
+        setupLuaVm();       
+        
         Object testClass = getTestClass().getOnlyConstructor().newInstance();
         ((KahluaTest)testClass).setRunner(this);
-
+        
         return testClass;
     }
 }

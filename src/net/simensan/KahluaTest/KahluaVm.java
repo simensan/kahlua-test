@@ -35,7 +35,7 @@ public class KahluaVm {
         luaSourceProvider = new LuaSourceProviderImpl();
         javaPlatform = new J2SEPlatform();
 		kahluaTable = javaPlatform.newEnvironment();
-		LuaCompiler.register(kahluaTable);
+		LuaCompiler.register(kahluaTable); 
 
 		luaConverterManager = new LuaConverterManager();
 		LuaNumberConverter.install(luaConverterManager);
@@ -52,7 +52,7 @@ public class KahluaVm {
         try {
 			Reader source = luaSourceProvider.getLuaSource(luaFile);
 			if (source == null) {
-				throw new RuntimeException("Could not find lua source " + luaFile);
+				throw new RuntimeException("Could not find lua source file: " + luaFile);
 			}
 			luaClosure = LuaCompiler.loadis(source, luaFile, kahluaTable);
 		} catch (IOException e) {
