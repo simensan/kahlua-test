@@ -8,10 +8,5 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 @Inherited
 public @interface LuaTest {
-	static class None extends Throwable {
-		private None() {
-		}
-	}
-	Class<? extends Throwable> expected() default None.class;
     String source() default "";
 }

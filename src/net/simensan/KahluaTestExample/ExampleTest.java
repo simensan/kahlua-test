@@ -1,7 +1,6 @@
 package net.simensan.KahluaTestExample;
 
 import net.simensan.KahluaTest.AbstractKahluaTest;
-import net.simensan.KahluaTest.annotations.LuaTest;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,6 +28,6 @@ public class ExampleTest extends AbstractKahluaTest {
     public void testCreateSquare2() {
         assertEquals(1,1);
         callLuaTest();
-        verifyOnce().on(squareBindings).createSquare(10);
+        verifyOnce().on(squareBindings).createSquare(12);
    }
 }

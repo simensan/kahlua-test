@@ -1,5 +1,4 @@
 [TODO]
- - Make it possible to have a lua test without a corresponding java test
  - Annotation to specify platform?
  - 100% coverage test suite
  - Exposed all junit assertions
@@ -8,4 +7,5 @@
  - LuaVm reset per test
  - Optional @LuaTest - guesses .lua test filename based on class name
  - Before / After lua function
+ - Make it possible to have a lua test without a corresponding java test   
  

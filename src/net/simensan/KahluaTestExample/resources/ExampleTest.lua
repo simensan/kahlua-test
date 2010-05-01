@@ -17,6 +17,16 @@ end
 
 
 function testCreateSquare2()
-    assertNotNull(square)
+    local square2 = CreateSquare(12)
     size = square:GetSize()
+end
+
+
+function testLuaOnlyTest()
+   assertEquals(size, 10)
+end
+
+
+function testLuaOnlyTest2()
+   assertNotNull(square)
 end
