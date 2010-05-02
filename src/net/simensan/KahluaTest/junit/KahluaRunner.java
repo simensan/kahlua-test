@@ -1,8 +1,14 @@
-package net.simensan.KahluaTest;
+package net.simensan.KahluaTest.junit;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import net.simensan.KahluaTest.JunitApiExposer;
+import net.simensan.KahluaTest.KahluaTest;
+import net.simensan.KahluaTest.NoLuaTestsAvailableException;
+import net.simensan.KahluaTest.NonExistantLuaTestException;
 import net.simensan.KahluaTest.annotations.LuaTest;
+import net.simensan.KahluaTest.junit.LuaFrameworkMethod;
+import net.simensan.KahluaTest.vm.KahluaVm;
 import org.junit.internal.runners.model.EachTestNotifier;
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;

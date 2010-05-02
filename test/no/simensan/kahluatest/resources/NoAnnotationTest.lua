@@ -1,0 +1,4 @@
+
+function testNoAnnotationUsesDefaultBehaviour()
+
+end

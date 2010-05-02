@@ -1,4 +1,4 @@
-package net.simensan.KahluaTest;
+package no.simensan.kahluatest.junit;
 
 import org.junit.runners.model.FrameworkMethod;
 

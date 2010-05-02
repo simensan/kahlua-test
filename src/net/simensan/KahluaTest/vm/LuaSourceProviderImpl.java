@@ -1,4 +1,4 @@
-package net.simensan.KahluaTest;
+package net.simensan.KahluaTest.vm;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;

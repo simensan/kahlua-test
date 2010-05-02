@@ -1,4 +1,4 @@
-package net.simensan.KahluaTest;
+package net.simensan.KahluaTest.vm;
 
 import se.krka.kahlua.converter.LuaConverterManager;
 import se.krka.kahlua.integration.annotations.LuaMethod;

@@ -2,8 +2,8 @@
   <library name="KahluaTestLibs">
     <CLASSES>
       <root url="file://$PROJECT_DIR$/libs" />
-      <root url="file://$PROJECT_DIR$/src/net/simensan/KahluaTest/resources" />
-      <root url="file://$PROJECT_DIR$/src/net/simensan/KahluaTestExample/resources" />
+      <root url="file://$PROJECT_DIR$/test/no/simensan/kahluatest/resources" />
+      <root url="file://$PROJECT_DIR$/src/no/simensan/KahluaTestExample/resources" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

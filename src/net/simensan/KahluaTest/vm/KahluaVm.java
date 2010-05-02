@@ -1,5 +1,7 @@
-package net.simensan.KahluaTest;
+package net.simensan.KahluaTest.vm;
 
+import net.simensan.KahluaTest.LuaSourceProviderImpl;
+import net.simensan.KahluaTest.NotPooLuaJavaClassExposer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.krka.kahlua.converter.KahluaEnumConverter;
