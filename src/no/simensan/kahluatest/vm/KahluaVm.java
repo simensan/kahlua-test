@@ -19,6 +19,7 @@ import se.krka.kahlua.vm.Platform;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.List;
 
 public class KahluaVm {
     private static final Logger logger = LoggerFactory.getLogger(KahluaVm.class);
@@ -35,7 +36,7 @@ public class KahluaVm {
         luaSourceProvider = new LuaSourceProviderImpl();
         javaPlatform = new J2SEPlatform();
 		kahluaTable = javaPlatform.newEnvironment();
-		LuaCompiler.register(kahluaTable); 
+		LuaCompiler.register(kahluaTable);
 
 		luaConverterManager = new LuaConverterManager();
 		LuaNumberConverter.install(luaConverterManager);
@@ -47,7 +48,7 @@ public class KahluaVm {
 		kahluaThread = new KahluaThread(javaPlatform, kahluaTable);
     }
 
-    public void loadLuaFromFile(String luaFile) {
+    public LuaReturn loadLuaFromFile(String luaFile) {
         LuaClosure luaClosure;
         try {
 			Reader source = luaSourceProvider.getLuaSource(luaFile);
@@ -58,20 +59,12 @@ public class KahluaVm {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-        
-        LuaReturn luaReturn = luaCall(luaClosure);
+
+        return luaCall(luaClosure);
     }
 
     public LuaReturn luaCall(Object functionObject, Object... args) {
-        LuaReturn luaReturn = luaCaller.protectedCall(kahluaThread, functionObject, args);
-
-        if (!luaReturn.isSuccess()) {
-			logger.error(luaReturn.getErrorString());
-		    logger.error(luaReturn.getLuaStackTrace());
-		    throw luaReturn.getJavaException();
-        }
-
-        return luaReturn;
+        return luaCaller.protectedCall(kahluaThread, functionObject, args);
     }
 
     public KahluaTable getEnvironment() {

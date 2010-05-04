@@ -3,7 +3,6 @@
     <CLASSES>
       <root url="file://$PROJECT_DIR$/libs" />
       <root url="file://$PROJECT_DIR$/test/no/simensan/kahluatest/resources" />
-      <root url="file://$PROJECT_DIR$/src/no/simensan/KahluaTestExample/resources" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

@@ -17,7 +17,12 @@ public class JunitApiExposer {
 
 	@LuaMethod(global = true)
 	public void fail() {
-		Assert.fail();
+        Assert.fail();
+	}
+
+    @LuaMethod(global = true)
+	public void fail(String message) {
+        Assert.fail(message);
 	}
 
 	@LuaMethod(global = true)

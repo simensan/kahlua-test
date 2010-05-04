@@ -20,13 +20,16 @@ public class KahluaRunner extends BlockJUnit4ClassRunner {
 
     private static final String LUA_BEFORE_FUNCTION = "before";
     private static final String LUA_AFTER_FUNCTION = "after";
+    private static final String TEST_PREFIX = "test";
 
     private KahluaVm kahluaVm;
     private FrameworkMethod currentMethod;
     private String luaSourceFile;
+    private LuaReturn currentLuaReturn;
     private List<FrameworkMethod> testMethods;
     private Map<String, Object> luaTestFunctions;
     private List<String> hasCalledLuaTest = Lists.newArrayList();
+    private List<LuaReturn> luaReturns;
 
     public KahluaRunner(Class<?> clazz) throws InitializationError {
         super(clazz);
@@ -37,7 +40,8 @@ public class KahluaRunner extends BlockJUnit4ClassRunner {
         
         Object beforeMethod = luaTestFunctions.get(LUA_BEFORE_FUNCTION);
         if(beforeMethod != null) {
-            kahluaVm.luaCall(beforeMethod);
+            LuaReturn beforeMethodReturn = kahluaVm.luaCall(beforeMethod);            
+            luaReturns.add(beforeMethodReturn);
         }
 
         Object luaMethod = luaTestFunctions.get(currentMethod.getName());
@@ -47,13 +51,22 @@ public class KahluaRunner extends BlockJUnit4ClassRunner {
         }
         
         LuaReturn result = kahluaVm.luaCall(luaMethod);
+        luaReturns.add(result);
+        
         if(!result.isSuccess()) {
             throw result.getJavaException();
         }
 
         Object afterMethod = luaTestFunctions.get(LUA_AFTER_FUNCTION);
         if(afterMethod != null) {
-            kahluaVm.luaCall(afterMethod);
+            LuaReturn afterMethodReturn = kahluaVm.luaCall(afterMethod);
+            luaReturns.add(afterMethodReturn);
+        }
+
+        for(LuaReturn luaReturn : luaReturns) {
+            if(!luaReturn.isSuccess()) {
+                throw luaReturn.getJavaException();
+            }
         }
     }
 
@@ -93,6 +106,7 @@ public class KahluaRunner extends BlockJUnit4ClassRunner {
     
     @Override
     protected Object createTest() throws Exception {
+        luaReturns = Lists.newArrayList();
         setupLuaVm();       
         
         Object testClass = getTestClass().getOnlyConstructor().newInstance();
@@ -117,25 +131,21 @@ public class KahluaRunner extends BlockJUnit4ClassRunner {
         kahluaVm.getLuaJavaClassExposer().exposeGlobalFunctions(junitApiExposer);
         luaTestFunctions = Maps.newHashMap();
 
-        try { //All this needs to be redone each test as each LuaVm holds its own unique reference to the methods
-            kahluaVm.loadLuaFromFile(luaSourceFile);
-            KahluaTableIterator it = kahluaVm.getEnvironment().iterator();
+        kahluaVm.loadLuaFromFile(luaSourceFile);
+        KahluaTableIterator it = kahluaVm.getEnvironment().iterator();
 
-            while(it.advance()) {
-                Object value = it.getValue();
-                String name = it.getKey().toString();
-                String valueType = BaseLib.type(value);
+        while(it.advance()) {
+            Object value = it.getValue();
+            String name = it.getKey().toString();
+            String valueType = BaseLib.type(value);
 
-                boolean foundMatch = (name.startsWith("test")
-                                        || name.equals("before")
-                                        || name.equals("after"))
-                                    && valueType.equals("function");
-                if(foundMatch) {
-                    luaTestFunctions.put(name, value);
-                }
+            boolean foundMatch = (name.startsWith(TEST_PREFIX)
+                                    || name.equals(LUA_BEFORE_FUNCTION)
+                                    || name.equals(LUA_AFTER_FUNCTION))
+                                && valueType.equals("function");
+            if(foundMatch) {
+                luaTestFunctions.put(name, value);
             }
-        } catch(RuntimeException e) {
-            e.printStackTrace();
         }
     }
     
@@ -144,7 +154,7 @@ public class KahluaRunner extends BlockJUnit4ClassRunner {
         List<FrameworkMethod> luaMethods = Lists.newArrayList();
         
         for (String key : luaTestFunctions.keySet()) {
-		    if(!key.equals("after") && !key.equals("before")) {
+		    if(!key.equals(LUA_AFTER_FUNCTION) && !key.equals(LUA_BEFORE_FUNCTION)) {
                 try {
                     //Force a get on the function, if it doesnt exist in the java class then it is a lua only test
                     getTestClass().getJavaClass().getMethod(key);
@@ -164,5 +174,9 @@ public class KahluaRunner extends BlockJUnit4ClassRunner {
 
     public KahluaVm getKahluaVm() {
         return kahluaVm;
+    }
+
+    public List<LuaReturn> getLuaReturns() {
+        return luaReturns;
     }
 }
