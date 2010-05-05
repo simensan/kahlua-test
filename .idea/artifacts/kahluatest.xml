@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="kahluatest">
+    <output-path>$PROJECT_DIR$/bin/</output-path>
+    <root id="archive" name="kahluatest.jar">
+      <element id="module-output" name="KahluaTest" />
+    </root>
+  </artifact>
+</component>

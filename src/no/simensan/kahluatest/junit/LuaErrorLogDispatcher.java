@@ -27,8 +27,11 @@ public class LuaErrorLogDispatcher extends TestWatchman {
         List<LuaReturn> luaReturns = testRunner.getRunner().getLuaReturns();
 
         for(LuaReturn luaReturn : luaReturns) {
-            logger.error(luaReturn.getErrorString());
-            logger.error(luaReturn.getLuaStackTrace());
+            if(!luaReturn.isSuccess()) {
+                logger.error(luaReturn.getErrorString());
+                logger.error(luaReturn.getLuaStackTrace());
+                luaReturn.getJavaException().printStackTrace();
+            }
         }
     }
 }

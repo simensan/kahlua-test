@@ -131,7 +131,11 @@ public class KahluaRunner extends BlockJUnit4ClassRunner {
         kahluaVm.getLuaJavaClassExposer().exposeGlobalFunctions(junitApiExposer);
         luaTestFunctions = Maps.newHashMap();
 
-        kahluaVm.loadLuaFromFile(luaSourceFile);
+        LuaReturn luaReturn = kahluaVm.loadLuaFromFile(luaSourceFile);
+        if(!luaReturn.isSuccess()) {
+            throw luaReturn.getJavaException();
+        }
+        
         KahluaTableIterator it = kahluaVm.getEnvironment().iterator();
 
         while(it.advance()) {

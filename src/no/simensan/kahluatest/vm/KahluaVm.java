@@ -12,6 +12,7 @@ import se.krka.kahlua.integration.expose.LuaJavaClassExposer;
 import se.krka.kahlua.j2se.J2SEPlatform;
 import se.krka.kahlua.luaj.compiler.LuaCompiler;
 import se.krka.kahlua.require.LuaSourceProvider;
+import se.krka.kahlua.require.Require;
 import se.krka.kahlua.vm.KahluaTable;
 import se.krka.kahlua.vm.KahluaThread;
 import se.krka.kahlua.vm.LuaClosure;
@@ -28,15 +29,15 @@ public class KahluaVm {
 	protected LuaCaller luaCaller;
 	protected KahluaThread kahluaThread;
 	protected Platform javaPlatform;
-	protected KahluaTable kahluaTable;
+	protected KahluaTable kahluaEnvironment;
 	protected LuaJavaClassExposer luaJavaClassExposer;
     protected LuaSourceProvider luaSourceProvider;
 
     public KahluaVm() {
         luaSourceProvider = new LuaSourceProviderImpl();
         javaPlatform = new J2SEPlatform();
-		kahluaTable = javaPlatform.newEnvironment();
-		LuaCompiler.register(kahluaTable);
+		kahluaEnvironment = javaPlatform.newEnvironment();
+		LuaCompiler.register(kahluaEnvironment);
 
 		luaConverterManager = new LuaConverterManager();
 		LuaNumberConverter.install(luaConverterManager);
@@ -44,8 +45,9 @@ public class KahluaVm {
 		KahluaEnumConverter.install(luaConverterManager);
 
         luaCaller = new LuaCaller(luaConverterManager);
-		luaJavaClassExposer = new NotPooLuaJavaClassExposer(luaConverterManager, javaPlatform, kahluaTable);
-		kahluaThread = new KahluaThread(javaPlatform, kahluaTable);
+		luaJavaClassExposer = new NotPooLuaJavaClassExposer(luaConverterManager, javaPlatform, kahluaEnvironment);
+		kahluaThread = new KahluaThread(javaPlatform, kahluaEnvironment);
+        new Require(luaSourceProvider).install(kahluaEnvironment);
     }
 
     public LuaReturn loadLuaFromFile(String luaFile) {
@@ -55,8 +57,9 @@ public class KahluaVm {
 			if (source == null) {
 				throw new RuntimeException("Could not find lua source file: " + luaFile);
 			}
-			luaClosure = LuaCompiler.loadis(source, luaFile, kahluaTable);
+			luaClosure = LuaCompiler.loadis(source, luaFile, kahluaEnvironment);
 		} catch (IOException e) {
+            e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 
@@ -68,7 +71,7 @@ public class KahluaVm {
     }
 
     public KahluaTable getEnvironment() {
-        return kahluaTable;
+        return kahluaEnvironment;
     }
 
     public LuaJavaClassExposer getLuaJavaClassExposer() {

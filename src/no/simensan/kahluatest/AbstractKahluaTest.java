@@ -8,14 +8,8 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.rules.TestWatchman;
 import org.junit.runner.RunWith;
-import org.junit.runners.model.FrameworkMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.krka.kahlua.integration.LuaReturn;
-
-import java.util.List;
-
-import static se.mockachino.Mockachino.spy;
 
 @RunWith(value= KahluaRunner.class)
 @LuaTest
