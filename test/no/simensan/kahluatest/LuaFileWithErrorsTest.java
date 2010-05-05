@@ -10,20 +10,20 @@ import org.slf4j.Logger;
 import static se.mockachino.Mockachino.*;
 import static se.mockachino.matchers.Matchers.any;
 
-public class LuaFileWithErrorsTest { // extends AbstractKahluaTest {
+public class LuaFileWithErrorsTest extends AbstractKahluaTest {
     private static final Logger errorLogger = mock(Logger.class);   
 
-   /* @Rule
+    @Rule
     public TestWatchman checkForErrorLogs = new LuaErrorLogDispatcher(errorLogger, this) {
         @Override
         public void finished(FrameworkMethod method) {
             checkLuaReturnsForErrors();
             verifyExactly(2).on(errorLogger).error(any(String.class));
         }
-    };*/
+    };
 
-   /* @Test(expected=RuntimeException.class)
+    @Test(expected=RuntimeException.class)
     public void testErrorThrowsExceptionAndLogsOutput() {
-        //callLuaTest();
-    } */
+        callLuaTest();
+    }
 }
