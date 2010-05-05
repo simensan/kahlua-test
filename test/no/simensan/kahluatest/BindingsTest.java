@@ -29,7 +29,6 @@ public class BindingsTest extends AbstractKahluaTest {
 
     @Test
     public void testCreateSquare2() {
-        assertEquals(1,1);
         callLuaTest();
         verifyOnce().on(squareBindings).createSquare(12);
    }

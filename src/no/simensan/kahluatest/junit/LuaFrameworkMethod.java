@@ -15,33 +15,8 @@ public class LuaFrameworkMethod extends FrameworkMethod {
     }
 
     @Override
-    public Object invokeExplosively(Object target, Object... params) throws Throwable {
-        return null;
-    }
-
-    @Override
     public String getName() {
         return luaMethodName;
-    }
-
-    @Override
-    public void validatePublicVoidNoArg(boolean isStatic, List<Throwable> errors) {
-        
-    }
-
-    @Override
-    public void validatePublicVoid(boolean isStatic, List<Throwable> errors) {
-
-    }
-
-    @Override
-    public boolean isShadowedBy(FrameworkMethod other) {
-        return false;
-    }
-
-    @Override
-    public boolean producesType(Class<?> type) {
-        return false;
     }
 
     @Override
@@ -54,8 +29,4 @@ public class LuaFrameworkMethod extends FrameworkMethod {
         return null;
     }
 
-    @Override
-    public int hashCode() {
-        return luaMethodName.hashCode();
-    } 
 }
