@@ -45,7 +45,7 @@ public class KahluaVm {
 		KahluaEnumConverter.install(luaConverterManager);
 
         luaCaller = new LuaCaller(luaConverterManager);
-		luaJavaClassExposer = new NotPooLuaJavaClassExposer(luaConverterManager, javaPlatform, kahluaEnvironment);
+		luaJavaClassExposer = new LuaJavaClassExposer(luaConverterManager, javaPlatform, kahluaEnvironment);
 		kahluaThread = new KahluaThread(javaPlatform, kahluaEnvironment);
         new Require(luaSourceProvider).install(kahluaEnvironment);
     }

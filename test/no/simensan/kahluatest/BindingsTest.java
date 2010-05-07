@@ -2,10 +2,9 @@ package no.simensan.kahluatest;
 
 import org.junit.Before;
 import org.junit.Test;
-import se.krka.kahlua.integration.annotations.LuaClass;
+import se.krka.kahlua.integration.annotations.LuaConstructor;
 import se.krka.kahlua.integration.annotations.LuaMethod;
 
-import static org.junit.Assert.assertEquals;
 import static se.mockachino.Mockachino.spy;
 import static se.mockachino.Mockachino.verifyOnce;
 
@@ -41,10 +40,9 @@ public class BindingsTest extends AbstractKahluaTest {
         }
     }
 
-    @LuaClass
     private class Square {
         private int size = 0;
-
+        
         public Square(int size) {
             this.size = size;
         }
